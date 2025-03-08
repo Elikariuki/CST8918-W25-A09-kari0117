@@ -1,0 +1,11 @@
+#!/bin/sh
+. $(dirname $0)/_/husky.sh
+
+echo 'Running Terraform format check...'
+terraform fmt -check -recursive
+
+echo 'Running Terraform validation...'
+terraform validate
+
+echo 'Running TFLint...'
+tflint

@@ -1,0 +1,24 @@
+{
+  "name": "cst8918-w25-a09-kari0117",
+  "version": "1.0.0",
+  "description": "terraform test lab",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "prepare": "husky install"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Elikariuki/CST8918-W25-A09-kari0117.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Elikariuki/CST8918-W25-A09-kari0117/issues"
+  },
+  "homepage": "https://github.com/Elikariuki/CST8918-W25-A09-kari0117#readme",
+  "devDependencies": {
+    "husky": "^8.0.0"
+  }
+}
