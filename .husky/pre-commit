@@ -1,4 +1,11 @@
-#!/usr/bin/env sh
-. "$(dirname -- "$0")/_/husky.sh"
+#!/bin/sh
+. $(dirname $0)/_/husky.sh
 
-npm test
+echo 'Running Terraform format check...'
+terraform fmt -check -recursive
+
+echo 'Running Terraform validation...'
+terraform validate
+
+echo 'Running TFLint...'
+tflint
