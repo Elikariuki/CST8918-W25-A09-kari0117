@@ -13,9 +13,7 @@ variable "location" {
 variable "storage_account_name" {
   type        = string
   description = "The name of the storage account"
-  # NOTE: Replace this with your own unique name. 
-  # Storage account names must be between 3 and 24 characters in length and use numbers and lower-case letters only.
-  default     = "terraformdemostore123"
+  default     = "kari0117store" # storage account name
 }
 
 variable "tags" {
