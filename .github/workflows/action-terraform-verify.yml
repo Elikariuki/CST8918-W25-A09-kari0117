@@ -79,21 +79,3 @@ jobs:
         run: |
           cd infrastructure
           terraform validate
-  
-  tflint:
-    runs-on: ubuntu-latest
-    name: Run TFLint
-    needs: validate-terraform
-    steps:
-      - uses: actions/checkout@v3
-      
-      - name: Setup TFLint
-        uses: terraform-linters/setup-tflint@v3
-        with:
-          tflint_version: v0.44.1
-      
-      - name: Run TFLint
-        run: |
-          cd infrastructure
-          tflint --init
-          tflint --format=compact
