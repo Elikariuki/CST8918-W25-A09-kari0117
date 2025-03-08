@@ -32,3 +32,4 @@ resource "azurerm_storage_account" "example" {
   account_replication_type = "LRS"
   tags                     = var.tags
 }
+resource "azurerm_resource_group" "error_example" {name="badformatting"}
