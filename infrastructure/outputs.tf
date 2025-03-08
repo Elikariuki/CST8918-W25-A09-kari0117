@@ -7,4 +7,5 @@ output "storage_account_id" {
 }
 
 output "storage_account_primary_blob_endpoint" {
-  value
+  value = azurerm_storage_account.example.primary_blob_endpoint
+}
