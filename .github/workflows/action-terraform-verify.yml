@@ -18,38 +18,45 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         with:
-          fetch-depth: 2
-      - name: Fetch changed files
-        id: pr_files
-        uses: jitterbit/get-changed-files@v1
+          fetch-depth: 0  # Fetch all history for all branches and tags
+      
+      - name: Get changed files
+        id: changed-files
+        uses: tj-actions/changed-files@v41
         with:
-          format: "space-delimited"
+          files: |
+            **/*.tf
+      
       - name: Configure terraform
         uses: hashicorp/setup-terraform@v2
         with:
           terraform_version: 1.2.4
-      - name: Validate terraform fmt (added_modified)
+      
+      - name: Validate terraform fmt
         run: |
-          set +e
-
           echo "CHECK_STATUS=0" >> $GITHUB_ENV
-
-          for changed_file in ${{ steps.pr_files.outputs.added_modified }}; do
-            echo "Checking terraform fmt on ${changed_file}..."
-
-            if [[ $changed_file == *.tf ]]; then
-              terraform fmt -check $changed_file
-              FMT_STATUS=$(echo $?)
-
-              if [[ $FMT_STATUS -ne 0 ]]; then
-                echo "❌ terraform fmt failed - ${changed_file}" >> $GITHUB_STEP_SUMMARY
-                echo "CHECK_STATUS=1" >> $GITHUB_ENV
+          
+          # Check if there are any changed Terraform files
+          if [[ -n "${{ steps.changed-files.outputs.all_changed_files }}" ]]; then
+            for file in ${{ steps.changed-files.outputs.all_changed_files }}; do
+              if [[ $file == *.tf ]]; then
+                echo "Checking terraform fmt on ${file}..."
+                terraform fmt -check "${file}"
+                FMT_STATUS=$?
+                
+                if [[ $FMT_STATUS -ne 0 ]]; then
+                  echo "❌ terraform fmt failed - ${file}" >> $GITHUB_STEP_SUMMARY
+                  echo "CHECK_STATUS=1" >> $GITHUB_ENV
+                fi
               fi
-            fi
-          done
+            done
+          else
+            echo "No Terraform files changed."
+          fi
+      
       - name: Process check
         if: always()
-        run: exit $CHECK_STATUS
+        run: exit ${{ env.CHECK_STATUS }}
 
   validate-terraform:
     runs-on: ubuntu-latest
@@ -57,14 +64,17 @@ jobs:
     needs: validate-format
     steps:
       - uses: actions/checkout@v3
+      
       - name: Configure terraform
         uses: hashicorp/setup-terraform@v2
         with:
           terraform_version: 1.2.4
+      
       - name: Initialize Terraform
         run: |
           cd infrastructure
           terraform init -backend=false
+      
       - name: Validate Terraform
         run: |
           cd infrastructure
@@ -76,10 +86,12 @@ jobs:
     needs: validate-terraform
     steps:
       - uses: actions/checkout@v3
+      
       - name: Setup TFLint
         uses: terraform-linters/setup-tflint@v3
         with:
           tflint_version: v0.44.1
+      
       - name: Run TFLint
         run: |
           cd infrastructure
